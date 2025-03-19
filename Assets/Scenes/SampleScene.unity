@@ -415,9 +415,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 545c5f505e6d0cf4da72f49f6c3724c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 200
-  height: 200
-  valueThreshold: 49.9
+  width: 100
+  height: 100
+  valueThreshold: 52.2
 --- !u!4 &917680623
 Transform:
   m_ObjectHideFlags: 0
@@ -447,10 +447,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   survivalCount: 4
   birthCount: 5
+  StateCounts: 3
   useMoore: 1
-  generations: 3
-  wallColor: {r: 0.4433962, g: 0.29959202, b: 0.17735848, a: 1}
-  baseColor: {r: 0.19752224, g: 0.5188679, b: 0.15370236, a: 1}
+  generations: 2
+  useStates: 1
+  wallColor: {r: 0.3584906, g: 0.22071023, b: 0.13325027, a: 1}
+  baseColor: {r: 0.3417889, g: 0.754717, b: 0.1666073, a: 1}
   displayImg: {fileID: 1656122277}
   ImgScale: 5.27
 --- !u!1 &1656122275
