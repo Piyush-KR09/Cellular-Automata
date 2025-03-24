@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,8 +6,8 @@ using UnityEngine.UI;
 public class CellularAutomata : MonoBehaviour
 {
     [Header("Basic Settings")]
-    public int survivalCount = 4; // Cells survive with >= 4 neighbors
-    public int birthCount = 5;    // Dead cells become alive with >= 5 neighbors
+    [Range(1,8)] public int survivalCount = 4; // Cells survive with >= 4 neighbors
+    [Range(1,8)] public int birthCount = 5;    // Dead cells become alive with >= 5 neighbors
     public int StateCounts = 3;
     public bool useMoore = true;  // 8-way connectivity
 
@@ -15,26 +16,49 @@ public class CellularAutomata : MonoBehaviour
     public bool useStates;
     public Color wallColor;
     public Color baseColor;
+
+    [Header("Display Settings")]
+    public Canvas canvas;
     public RawImage displayImg;
 
     [Header("Update Settings")]
-    public float ImgScale;
+    public bool animate;
+    public float timeDelayForAnimate = 4f;
 
     RandomNoiseGen noiseGen;
     bool[,] NonStateMap;
     bool[,] NonStateFinalMap;
     int[,] stateMap;
     int[,] finalStateMap;
-
+    bool coroutine;
     private void Start()
     {
         noiseGen = GetComponent<RandomNoiseGen>();
         NonStateMap = noiseGen.MapGen(); // Get initial noise
         stateMap = new int[noiseGen.width, noiseGen.height];
 
-        // Sets stateMap if use State is true
-        if (useStates)
+        if (!animate)
         {
+            // Sets stateMap if use State is true
+            if (useStates)
+            {
+                for (int i = 0; i < NonStateMap.GetLength(0); i++)
+                {
+                    for (int j = 0; j < NonStateMap.GetLength(1); j++)
+                    {
+                        stateMap[i, j] = NonStateMap[i, j] ? StateCounts : 0;
+                    }
+                }
+                //Generate State map
+                finalStateMap = CellularAutomataFunc(stateMap, generations);
+            }
+            //Generate Final map
+            else NonStateFinalMap = CellularAutomataFunc(NonStateMap, generations);
+
+            //Data to ShowVisual()
+            ShowVisuals();
+        }
+        else {
             for (int i = 0; i < NonStateMap.GetLength(0); i++)
             {
                 for (int j = 0; j < NonStateMap.GetLength(1); j++)
@@ -42,20 +66,43 @@ public class CellularAutomata : MonoBehaviour
                     stateMap[i, j] = NonStateMap[i, j] ? StateCounts : 0;
                 }
             }
-            //Generate State map
-            finalStateMap = CellularAutomataFunc(stateMap, generations);
+            generations = 0;
+            coroutine = true;
         }
-        //Generate Final map
-        else NonStateFinalMap = CellularAutomataFunc(NonStateMap, generations);
-
-        //Data to ShowVisual()
-        Texture2D texture2D = new (noiseGen.width, noiseGen.height);
-        ShowVisuals(texture2D);
     }
 
     private void Update()
+    { 
+        //Will run a coroutine for animate
+        if (animate && coroutine)
+        {
+           StartCoroutine(UpdationCoroutine());
+        }
+
+        VisualUpdation();
+    }
+
+    IEnumerator UpdationCoroutine()
     {
-        displayImg.transform.localScale = Vector3.one * ImgScale;
+        coroutine = false;
+        // Sets stateMap if use State is true
+        if (useStates)
+        {
+            //Generate State map
+            finalStateMap = CellularAutomataFunc(stateMap, generations);
+            stateMap = finalStateMap;
+        }
+        //Generate Final map
+        else 
+        {
+            NonStateFinalMap = CellularAutomataFunc(NonStateMap, generations);
+            NonStateMap = NonStateFinalMap;
+        }
+        //Update visual each Iteration
+        ShowVisuals();
+
+        yield return new WaitForSeconds(timeDelayForAnimate);
+        coroutine = true;
     }
 
     //used for !useStates
@@ -193,14 +240,18 @@ public class CellularAutomata : MonoBehaviour
         return count;
     }
 
-    private void ShowVisuals(Texture2D texture2D)
+
+    //Visuals
+    private void ShowVisuals()
     {
+        Texture2D texture2D = new(noiseGen.width, noiseGen.height);
         displayImg.rectTransform.sizeDelta = new(noiseGen.width, noiseGen.height);
         displayImg.texture = texture2D;
 
         if (useStates && finalStateMap!= null)
         {
-            int width = finalStateMap.GetLength(0), height = finalStateMap.GetLength(1);
+            int width = finalStateMap.GetLength(0), 
+                height = finalStateMap.GetLength(1);
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
@@ -226,5 +277,20 @@ public class CellularAutomata : MonoBehaviour
         texture2D.filterMode = FilterMode.Point;
         texture2D.wrapMode = TextureWrapMode.Clamp;
         texture2D.Apply();
+    }
+
+    private void VisualUpdation()
+    {
+        //Resize the img based n canvas size
+        var canvasTranform = canvas.GetComponent<RectTransform>().rect;
+
+        //get relative distances
+        var heightDiff = canvasTranform.height - noiseGen.height;
+        var widthDiff = canvasTranform.width - noiseGen.width;
+
+        //set width and height based on distances
+        displayImg.rectTransform.sizeDelta = (heightDiff > widthDiff) ?
+            new(canvasTranform.width, noiseGen.height * canvasTranform.width / noiseGen.width) :
+            new(noiseGen.width * canvasTranform.height / noiseGen.height, canvasTranform.height);
     }
 }

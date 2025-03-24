@@ -354,7 +354,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 1.73
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -417,7 +417,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 100
   height: 100
-  valueThreshold: 52.2
+  valueThreshold: 48
 --- !u!4 &917680623
 Transform:
   m_ObjectHideFlags: 0
@@ -447,14 +447,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   survivalCount: 4
   birthCount: 5
-  StateCounts: 3
+  StateCounts: 2
   useMoore: 1
-  generations: 2
-  useStates: 1
-  wallColor: {r: 0.3584906, g: 0.22071023, b: 0.13325027, a: 1}
-  baseColor: {r: 0.3417889, g: 0.754717, b: 0.1666073, a: 1}
+  generations: 4
+  useStates: 0
+  wallColor: {r: 0.5019608, g: 0.341588, b: 0.14509802, a: 1}
+  baseColor: {r: 0.18665795, g: 0.5019608, b: 0.14509802, a: 1}
+  canvas: {fileID: 125688540}
   displayImg: {fileID: 1656122277}
-  ImgScale: 5.27
+  animate: 1
+  timeDelayForAnimate: 0.3
 --- !u!1 &1656122275
 GameObject:
   m_ObjectHideFlags: 0
@@ -482,7 +484,7 @@ RectTransform:
   m_GameObject: {fileID: 1656122275}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 5.35, y: 5.35, z: 5.35}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 125688541}
@@ -490,7 +492,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 200, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1656122277
 MonoBehaviour:
